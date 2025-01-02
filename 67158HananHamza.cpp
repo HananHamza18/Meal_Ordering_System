@@ -142,8 +142,9 @@ void displayMenu(MenuItem menu[], int size, const string& menuType, int quantiti
         menu[i].displayData(); // Use the `displayData()` method to display details
     }
 
-    cout << "\nEnter the product number to select or 0 to return to the main menu: ";
+    
     while (true) {
+	    cout << "\nEnter the product number to select or 0 to return to the main menu: ";
         cin >> choice;
         if (choice == 0) {
             return;
