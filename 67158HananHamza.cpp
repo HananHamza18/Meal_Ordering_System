@@ -20,6 +20,7 @@ void myLogo();
 void displayMenu(MenuItem menu[], int size, const string& menuType, int quantities[], int counter);
 double calculateBill(MenuItem menu[], int size, int quantities[]);
 void displayBill(MenuItem menu[], int size, int quantities[]);
+double pay(double total, double payment);
 void userMenu(
     const string& userName,
     MenuItem burgerMenu[], int burgerSize,
@@ -76,7 +77,8 @@ int main() {
         
         
         if (mainChoice == 1) {
-            authenticateAdmin();
+                authenticateAdmin();
+            
             adminMenu(burgerMenu, burgerCounter, pizzaMenu, pizzaCounter, sideOrderMenu, sideOrderCounter, maxMenuSize);
 
 
@@ -88,15 +90,7 @@ int main() {
             cout << "Enter Username: ";
             cin.ignore();
             getline(cin, userName);
-            system("cls");
-            cout << "\t   __      __        __\n";
-            cout << "\t  /  \\    /  \\ ____ |  | ____  ____    _____   ____ \n"; // Greet the user
-            cout << "\t  \\   \\/\\/   // __ \\|  |/ ___\\/  _ \\  /     \\ / __ \\\n";
-            cout << "\t   \\        /|  ___/|  |  \\__(  <_> )|  Y Y  | ___ /  \n";
-            cout << "\t    \\__/\\__/  \\____\\|__|\\_____>____/ |__|_|__|\\____\\\n";
-            cout << " ----------------------------------------------------------------- " << endl;
-            system("pause");
-            system("cls");
+            
             userMenu(userName, burgerMenu, burgerSize, pizzaMenu, pizzaSize, sideOrderMenu, sideOrderSize);
         }
         else if (mainChoice == 3) {
@@ -144,7 +138,7 @@ void displayMenu(MenuItem menu[], int size, const string& menuType, int quantiti
 
     
     while (true) {
-	    cout << "\nEnter the product number to select or 0 to return to the main menu: ";
+        cout << "\nEnter the product number to select or 0 to return to the main menu: ";
         cin >> choice;
         if (choice == 0) {
             return;
@@ -174,6 +168,8 @@ void displayBill(MenuItem menu[], int size, int quantities[]) {
         }
     }
     cout << "===============================================================================" << endl;
+
+    
 }
 
 // calculate bill
@@ -185,6 +181,10 @@ double calculateBill(MenuItem menu[], int size, int quantities[]) {
     return total;
 }
 
+double pay(double total, double payment) {
+        double change = payment - total;
+        return change;
+}
 // user menu
 void userMenu(
     const string& userName,
@@ -192,6 +192,15 @@ void userMenu(
     MenuItem pizzaMenu[], int pizzaSize,
     MenuItem sideOrderMenu[], int sideOrderSize
 ) {
+    system("cls");
+    cout << "\t   __      __        __\n";
+    cout << "\t  /  \\    /  \\ ____ |  | ____  ____    _____   ____ \n"; // Greet the user
+    cout << "\t  \\   \\/\\/   // __ \\|  |/ ___\\/  _ \\  /     \\ / __ \\\n";
+    cout << "\t   \\        /|  ___/|  |  \\__(  <_> )|  Y Y  | ___ /  \n";
+    cout << "\t    \\__/\\__/  \\____\\|__|\\_____>____/ |__|_|__|\\____\\\n";
+    cout << " ----------------------------------------------------------------- " << endl;
+    system("pause");
+    system("cls");
     int burgerQuantities[maxMenuSize] = {0};
     int pizzaQuantities[maxMenuSize] = {0};
     int sideOrderQuantities[maxMenuSize] = {0};
@@ -223,17 +232,28 @@ void userMenu(
             total += calculateBill(burgerMenu, burgerSize, burgerQuantities);
             total += calculateBill(pizzaMenu, pizzaSize, pizzaQuantities);
             total += calculateBill(sideOrderMenu, sideOrderSize, sideOrderQuantities);
-            //displaying bill
-            cout << "Total Bill: Rs." << total << endl;
             displayBill(burgerMenu, burgerSize, burgerQuantities);
             displayBill(pizzaMenu, pizzaSize, pizzaQuantities);
             displayBill(sideOrderMenu, sideOrderSize, sideOrderQuantities);
+            //displaying bill
+            cout << "Total Bill: Rs." << total << endl;
+            //payment
 			if (total == 0) {
 				cout << "You haven't ordered anything yet." << endl;
 			}
-			else {
-				cout << "Your order will be ready in 30 minutes.\nThank you for ordering with us, " << userName << "!" << endl;
-			}
+            else {
+                double payment = 0.0;
+                cout << "Enter Payment: ";
+                cin >> payment;
+                if (payment > 0 && payment >= total) {
+                    double change = pay(total, payment);
+                    cout << "your change: " << change << endl;
+                    cout << "Thank you for ordering.\nYour order will be ready in 30 minutes " << userName << "!" << endl;
+                }
+                else {
+                    cout << "Insufficient amount. Your order has been cancelled. "<<endl;
+                }
+            }
 			system("pause");
             return;
             break;
@@ -251,16 +271,17 @@ void userMenu(
 
 // authenticate admin
 void authenticateAdmin() {
-    string password;
-    cout << "Enter Admin Password: ";
-    cin >> password;
-    if (password == "admin") {
-        cout << "Admin Authenticated" << endl;
-    }
-    else {
-        cout << "Invalid Password" << endl;
-        authenticateAdmin();
-    }
+        string password;
+        cout << "Enter Admin Password: ";
+        cin >> password;
+        if (password == "admin") {
+            cout << "Admin Authenticated" << endl;
+            return;
+        }
+        else {
+            cout << "Invalid Password" << endl;
+        }
+   
 }
 
 //adding items
