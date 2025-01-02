@@ -14,6 +14,7 @@ struct MenuItem {
 };
 
 
+
 //-------------------------------------------Function declarations-------------------------------------------------
 //Fuctions for User
 void myLogo();
@@ -28,7 +29,8 @@ void userMenu(
     MenuItem sideOrderMenu[], int sideOrderSize
 );
 //Fuctions for Admin
-void authenticateAdmin();
+
+bool authenticateAdmin();
 void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, int maxSize);
 void addItem(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, int maxSize);
 void updateItem(MenuItem menu[], int size);
@@ -75,15 +77,20 @@ int main() {
 		cout << "Enter your choice: ";
 		cin >> mainChoice;
         
-        
         if (mainChoice == 1) {
-                authenticateAdmin();
+                if (authenticateAdmin()) {
+					cout << "Admin Authenticated" << endl;
+                }
+				else {
+					cout << "Access denied. Returning to main menu." << endl;
+					system("pause");
+					continue;
+				}
             
             adminMenu(burgerMenu, burgerCounter, pizzaMenu, pizzaCounter, sideOrderMenu, sideOrderCounter, maxMenuSize);
 
-
-
-        }
+      
+        } 
 
         else if (mainChoice == 2) {
             string userName;
@@ -270,18 +277,18 @@ void userMenu(
 }
 
 // authenticate admin
-void authenticateAdmin() {
-        string password;
-        cout << "Enter Admin Password: ";
-        cin >> password;
-        if (password == "admin") {
-            cout << "Admin Authenticated" << endl;
-            return;
-        }
-        else {
-            cout << "Invalid Password" << endl;
-        }
-   
+bool authenticateAdmin() {
+	string password;
+	cout << "Enter Admin Password: ";
+	cin >> password;
+	if (password == "admin") {
+		cout << "Admin Authenticated" << endl;
+		return true;
+	}
+	else {
+		cout << "Invalid Password" << endl;
+		return false;
+	}
 }
 
 //adding items
