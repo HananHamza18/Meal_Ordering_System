@@ -12,6 +12,11 @@ struct MenuItem {
     void input();
 	void displayData();
 };
+const int maxMenuSize = 50;
+const int burgerSize = 50;
+const int pizzaSize = 30;
+const int sideOrderSize = 20;
+const int dealSize = 10;
 
 
 
@@ -26,21 +31,20 @@ void userMenu(
     const string& userName,
     MenuItem burgerMenu[], int burgerSize,
     MenuItem pizzaMenu[], int pizzaSize,
-    MenuItem sideOrderMenu[], int sideOrderSize
+    MenuItem sideOrderMenu[], int sideOrderSize,
+    MenuItem deals[], int dealSize
 );
 //Fuctions for Admin
 
 bool authenticateAdmin();
-void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, int maxSize);
-void addItem(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, int maxSize);
+void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, MenuItem deals[],int& dealSize, int maxSize);
+void addItem(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, MenuItem deals[], int& dealSize, int maxSize);
 void updateItem(MenuItem menu[], int size);
 void deleteItem(MenuItem menu[], int& size);
 
 // -------------------------------------Global Variables-----------------------------------------------------------
-const int maxMenuSize = 50;
-const int burgerSize = 50;
-const int pizzaSize = 30;
-const int sideOrderSize = 20;
+
+
 MenuItem burgerMenu[burgerSize] = {
 {"Reggy Burger", 390.00,"."}, // menu items
 {"Bazinga Burger", 560.00,"."},
@@ -66,6 +70,12 @@ MenuItem sideOrderMenu[sideOrderSize] = {
 {"Chicken piece", 300.00,"."}
 };
 int sideOrderCounter = 3;
+MenuItem deals[dealSize] = {
+{"Deal 1", 1250.00, "2 Bazinga, Regular Fries, 2 Regular Drinks" },
+{ "Deal 2", 1750.00, "2 Bazinga Burger, 2 pcs Chicken, Large Fries, 2 Regular Drink" },
+    {"Deal 3", 1890.00, "3 Bazinga Burger, Large Fries, 1 Liter Drink"}
+};
+int dealCounter = 3;
 
 //---------------------------------------------Main Function-------------------------------------------------------
 int main() {
@@ -87,7 +97,7 @@ int main() {
 					continue;
 				}
             
-            adminMenu(burgerMenu, burgerCounter, pizzaMenu, pizzaCounter, sideOrderMenu, sideOrderCounter, maxMenuSize);
+            adminMenu(burgerMenu, burgerCounter, pizzaMenu, pizzaCounter, sideOrderMenu, sideOrderCounter, deals, dealCounter, maxMenuSize);
 
       
         } 
@@ -98,7 +108,7 @@ int main() {
             cin.ignore();
             getline(cin, userName);
             
-            userMenu(userName, burgerMenu, burgerSize, pizzaMenu, pizzaSize, sideOrderMenu, sideOrderSize);
+            userMenu(userName, burgerMenu, burgerSize, pizzaMenu, pizzaSize, sideOrderMenu, sideOrderSize,deals,dealSize);
         }
         else if (mainChoice == 3) {
             cout << "Thank you for using our system. Goodbye!" << endl;
@@ -133,9 +143,9 @@ void displayMenu(MenuItem menu[], int size, const string& menuType, int quantiti
     int choice;
     system("cls");
     cout << "\nSelect what you want in " << menuType << endl;
-    cout << "=====================================================================" << endl;
+    cout << "=================================================================================================================" << endl;
     cout << setw(15) << "PRODUCT NUMBER" << setw(20) << "PRODUCT" << setw(10) << "PRICE" << "\tDESCRIPTION" << endl;
-    cout << "=====================================================================" << endl;
+    cout << "=================================================================================================================" << endl;
 
     // Display menu items up to the `counter` value
     for (int i = 0; i < counter; ++i) {
@@ -163,9 +173,9 @@ void displayMenu(MenuItem menu[], int size, const string& menuType, int quantiti
 // display bill
 void displayBill(MenuItem menu[], int size, int quantities[]) {
     cout << "\nYour Order Summary:" << endl;
-    cout << "===============================================================================" << endl;
+    cout << "=====================================================================" << endl;
     cout << setw(20) << "PRODUCT NUMBER" << setw(20) << "PRODUCT" << setw(10) << "PRICE" << setw(10) << "QUANTITY" << setw(10) << "TOTAL" << endl;
-    cout << "===============================================================================" << endl;
+    cout << "====================================================================="<< endl;
 
     for (int i = 0; i < size; ++i) {
         if (quantities[i] > 0) {
@@ -197,7 +207,8 @@ void userMenu(
     const string& userName,
     MenuItem burgerMenu[], int burgerSize,
     MenuItem pizzaMenu[], int pizzaSize,
-    MenuItem sideOrderMenu[], int sideOrderSize
+    MenuItem sideOrderMenu[], int sideOrderSize,
+    MenuItem deals[], int dealSize
 ) {
     system("cls");
     cout << "\t   __      __        __\n";
@@ -211,6 +222,7 @@ void userMenu(
     int burgerQuantities[maxMenuSize] = {0};
     int pizzaQuantities[maxMenuSize] = {0};
     int sideOrderQuantities[maxMenuSize] = {0};
+	int dealQuantities[maxMenuSize] = { 0 };
     double total = 0.0;
     int choice;
     // main loop
@@ -220,8 +232,9 @@ void userMenu(
         cout << "1.Burgerz" << endl;
         cout << "2.Pizzas" << endl;
         cout << "3.Side Orders" << endl;
-        cout << "4.Display total" << endl;
-        cout << "5.Exit" << endl;
+        cout << "4.Deals" << endl;
+        cout << "5.Display total" << endl;
+        cout << "6.Exit" << endl;
         cout << "Enter Your Choice: " << endl;
         cin >> choice;
         switch (choice)
@@ -236,12 +249,17 @@ void userMenu(
             displayMenu(sideOrderMenu, sideOrderSize, " side Orders.", sideOrderQuantities,sideOrderCounter);
             break;
         case 4:
+            displayMenu(deals, dealSize, "Somewhat Amazing", dealQuantities, dealCounter);
+            break;
+        case 5:
             total += calculateBill(burgerMenu, burgerSize, burgerQuantities);
             total += calculateBill(pizzaMenu, pizzaSize, pizzaQuantities);
             total += calculateBill(sideOrderMenu, sideOrderSize, sideOrderQuantities);
+            total += calculateBill(deals, dealSize, dealQuantities);
             displayBill(burgerMenu, burgerSize, burgerQuantities);
             displayBill(pizzaMenu, pizzaSize, pizzaQuantities);
             displayBill(sideOrderMenu, sideOrderSize, sideOrderQuantities);
+            displayBill(deals, dealSize, dealQuantities);
             //displaying bill
             cout << "Total Bill: Rs." << total << endl;
             //payment
@@ -264,7 +282,7 @@ void userMenu(
 			system("pause");
             return;
             break;
-        case 5:
+        case 6:
             cout << "Exiting without order" << endl;
 			system("pause");
             return;
@@ -292,12 +310,13 @@ bool authenticateAdmin() {
 }
 
 //adding items
-void addItem(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, int maxSize) {
+void addItem(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, MenuItem deals[], int&dealSize, int maxSize) {
     int categoryChoice;
     cout << "Select menu category to add item:" << endl;
     cout << "1. Burgers" << endl;
     cout << "2. Pizzas" << endl;
     cout << "3. Side Orders" << endl;
+	cout << "4. Deals" << endl;
     cout << "Enter choice: ";
     cin >> categoryChoice;
 
@@ -332,6 +351,16 @@ void addItem(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& 
             cout << "Side Orders menu is full, can't add more items." << endl;
         }
         break;
+    case 4:
+		if (dealSize < maxSize) {
+			deals[dealSize].input();
+			dealCounter++;
+			cout << "Item added to Deals successfully." << endl;
+		}
+		else {
+			cout << "Deals menu is full, can't add more items." << endl;
+		}
+		break;
     default:
         cout << "Invalid category choice!" << endl;
         break;
@@ -373,7 +402,7 @@ void deleteItem(MenuItem menu[], int& size) {
     }
 }
 //admin menu
-void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, int maxSize) {
+void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int& pizzaSize, MenuItem sideOrderMenu[], int& sideOrderSize, MenuItem deals[], int& dealSize, int maxSize){
 	system("cls");
     int choice;
     while (true) {
@@ -389,7 +418,7 @@ void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int
 
         switch (choice) {
         case 1:
-            addItem(burgerMenu, burgerSize, pizzaMenu, pizzaSize, sideOrderMenu, sideOrderSize, maxSize);
+            addItem(burgerMenu, burgerSize, pizzaMenu, pizzaSize, sideOrderMenu, sideOrderSize, deals, dealSize, maxSize);
             break;
 
         case 2: {
@@ -398,6 +427,7 @@ void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int
             cout << "1. Burgers" << endl;
             cout << "2. Pizzas" << endl;
             cout << "3. Side Orders" << endl;
+			cout << "4. Deals" << endl;
             cout << "Enter choice: ";
             cin >> category;
 
@@ -410,6 +440,9 @@ void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int
                 break;
             case 3:
                 updateItem(sideOrderMenu, sideOrderSize);
+                break;
+            case 4:
+				updateItem(deals, dealSize);
                 break;
             default:
                 cout << "Invalid category choice!" << endl;
@@ -424,6 +457,7 @@ void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int
             cout << "1. Burgers" << endl;
             cout << "2. Pizzas" << endl;
             cout << "3. Side Orders" << endl;
+            cout << "4. Deals" << endl;
             cout << "Enter choice: ";
             cin >> category;
 
@@ -436,6 +470,9 @@ void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int
                 break;
             case 3:
                 deleteItem(sideOrderMenu, sideOrderSize);
+                break;
+            case 4:
+                deleteItem(deals, dealSize);
                 break;
             default:
                 cout << "Invalid category choice!" << endl;
@@ -458,6 +495,11 @@ void adminMenu(MenuItem burgerMenu[], int& burgerSize, MenuItem pizzaMenu[], int
             cout << "\nSide Orders Menu:" << endl;
             for (int i = 0; i < sideOrderSize; ++i) {
                 cout << i + 1 << ". " << sideOrderMenu[i].name << " - Rs." << sideOrderMenu[i].price << " - " << sideOrderMenu[i].descripition << endl;
+            }
+            
+			cout << "\nDeals Menu:" << endl;
+            for (int i = 0; i < dealCounter; ++i) {
+				cout << i + 1 << ". " << deals[i].name << " - Rs." << deals[i].price << " - " << deals[i].descripition << endl;
             }
             break;
 
